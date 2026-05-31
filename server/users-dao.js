@@ -1,6 +1,12 @@
 import db from "./db.js";
 import crypto from "crypto";
 
+function User(id, email, name) {
+  this.id = id;
+  this.email = email;
+  this.name = name;
+}
+
 export const getUser = (email, password) => {
   return new Promise((resolve, reject) => {
     const query = "SELECT * FROM users WHERE email = ?";
@@ -10,7 +16,7 @@ export const getUser = (email, password) => {
       } else if (!row) {
         resolve(false);
       } else {
-        const user = { id: row.id, email: row.email, name: row.name };
+        const user = User(row.id, row.email, row.name);
 
         crypto.scrypt(password, row.pw_salt, 32, (err, hashedPw) => {
           if (err) {
