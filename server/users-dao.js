@@ -7,7 +7,7 @@ function User(id, email, name) {
   this.name = name;
 }
 
-export const getUser = (email, password) => {
+export const login = (email, password) => {
   return new Promise((resolve, reject) => {
     const query = "SELECT * FROM users WHERE email = ?";
     db.get(query, [email], (err, row) => {
