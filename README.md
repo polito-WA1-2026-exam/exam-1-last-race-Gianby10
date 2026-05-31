@@ -1,5 +1,5 @@
-# Exam #N: "Exam Title"
-## Student: s123456 LASTNAME FIRSTNAME 
+# Exam #1: "Last Race"
+## Student: s360803 LASTNAME FIRSTNAME 
 
 ## React Client Application Routes
 
@@ -22,7 +22,7 @@
 
 ## Database Tables
 
-- Table `users` - contains xx yy zz
+- Table `users` - contains user data: id, email, name, password hash and password salt. A `User` is uniquely identified by email
 - Table `something` - contains ww qq ss
 - ...
 
