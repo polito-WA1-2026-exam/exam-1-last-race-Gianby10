@@ -3,6 +3,7 @@ import session from "express-session";
 import morgan from "morgan";
 import passport from "passport";
 import LocalStrategy from "passport-local";
+import { getAllLines, getAllLinks, getAllStations } from "./games-dao.js";
 import { login } from "./users-dao.js";
 const app = new express();
 const PORT = 3001;
@@ -84,8 +85,20 @@ app.delete("/api/sessions/current", (req, res) => {
   });
 });
 
-app.get("/", isLoggedIn, (req, res) => {
-  res.status(200).json({ status: "OK" });
+app.get("/api/network/full", isLoggedIn, async (req, res) => {
+  try {
+    const stations = await getAllStations();
+    const lines = await getAllLines();
+    const links = await getAllLinks();
+    res.status(200).json({
+      stations,
+      lines,
+      links,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 app.listen(PORT, () => {
