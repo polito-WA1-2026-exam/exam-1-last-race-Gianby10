@@ -1,11 +1,15 @@
-// imports
 import express from "express";
-
-// init express
+import morgan from "morgan";
 const app = new express();
-const port = 3001;
+const PORT = 3001;
 
-// activate the server
-app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
+app.use(express.json());
+app.use(morgan("dev"));
+
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "OK" });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server listening at http://localhost:${PORT}`);
 });
