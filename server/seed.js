@@ -236,7 +236,7 @@ const seed = () => {
     await insertLine(l.id, l.name);
   });
   lineStations.forEach(async (ls) => {
-    await insertLinesStations(ls.id, ls.stationIds);
+    await insertLinesStations(ls.lineId, ls.stationIds);
   });
 };
 
