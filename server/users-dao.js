@@ -16,7 +16,7 @@ export const login = (email, password) => {
       } else if (!row) {
         resolve(false);
       } else {
-        const user = User(row.id, row.email, row.name);
+        const user = new User(row.id, row.email, row.name);
 
         crypto.scrypt(password, row.pw_salt, 32, (err, hashedPw) => {
           if (err) {

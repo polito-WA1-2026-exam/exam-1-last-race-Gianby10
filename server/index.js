@@ -3,6 +3,7 @@ import session from "express-session";
 import morgan from "morgan";
 import passport from "passport";
 import LocalStrategy from "passport-local";
+import { login } from "./users-dao.js";
 const app = new express();
 const PORT = 3001;
 
