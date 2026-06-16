@@ -3,6 +3,8 @@ import session from "express-session";
 import morgan from "morgan";
 import passport from "passport";
 import LocalStrategy from "passport-local";
+import cors from "cors";
+
 import { getAllLines, getAllLinks, getAllStations } from "./games-dao.js";
 import { login } from "./users-dao.js";
 const app = new express();
@@ -10,6 +12,14 @@ const PORT = 3001;
 
 app.use(express.json());
 app.use(morgan("dev"));
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    optionsSuccessStatus: 200,
+    credentials: true,
+  }),
+);
 
 passport.use(
   new LocalStrategy(
