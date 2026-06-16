@@ -209,17 +209,32 @@ const lines = [
   { id: 3, name: "Maestrale Line" },
   { id: 4, name: "Levante Line" },
   { id: 5, name: "Ponente Line" },
-  { id: 6, name: "Tramontana Line" },
 ];
 
 const lineStations = [
-  { lineId: 1, stationIds: [1, 11, 6, 9, 14, 7] },
-  { lineId: 2, stationIds: [8, 13, 14, 3, 2] },
-  { lineId: 3, stationIds: [1, 14, 10, 12, 5] },
-  { lineId: 4, stationIds: [12, 3, 6, 2, 11, 8] },
-  { lineId: 5, stationIds: [4, 10, 6, 13, 5] },
-  { lineId: 6, stationIds: [7, 9, 3, 11, 4] },
+  { lineId: 1, stationIds: [1, 11, 6, 9, 7] },
+  { lineId: 2, stationIds: [8, 14, 3, 6, 2] },
+  { lineId: 3, stationIds: [5, 12, 10, 14] },
+  { lineId: 4, stationIds: [4, 11, 3, 13] },
+  { lineId: 5, stationIds: [10, 9, 3, 2] },
 ];
+
+/*
+Libeccio Line:
+Porta del Sale -> Fontana del Tempo -> Mercato Blu -> Riva Antica -> Giardini di Corallo
+
+Scirocco Line:
+Arco di Levante -> Darsena Nuova -> Piazza dei Venti -> Mercato Blu -> Molo delle Sirene
+
+Maestrale Line:
+Torre del Faro -> Corte delle Lanterne -> Collina degli Ulivi -> Darsena Nuova
+
+Levante Line:
+Borgo delle Onde -> Fontana del Tempo -> Piazza dei Venti -> Via del Tramonto
+
+Ponente Line:
+Collina degli Ulivi -> Riva Antica -> Piazza dei Venti -> Molo delle Sirene
+*/
 
 const seed = () => {
   users.forEach(async (u) => {
