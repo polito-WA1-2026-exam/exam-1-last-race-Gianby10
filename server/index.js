@@ -95,15 +95,44 @@ app.delete("/api/sessions/current", (req, res) => {
   });
 });
 
-app.get("/api/network/full", isLoggedIn, async (req, res) => {
+app.get("/api/network/complete", isLoggedIn, async (req, res) => {
   try {
     const stations = await getAllStations();
     const lines = await getAllLines();
     const links = await getAllLinks();
+
+    const map = new Map();
+
+    // I use map to group lines, so all elements of line_id 1 are together, ecc...
+    links.forEach((l) => {
+      if (!map.has(l.line_id)) {
+        // If map doesn't already have an entry with this line id, then I create it as an empty array
+        map.set(l.line_id, []);
+      }
+
+      map.get(l.line_id).push({
+        // for each line id, I push the object with station id and stop order
+        stationId: l.station_id,
+        stopOrder: l.stop_order,
+      });
+    });
+
+    const linesStations = Array.from(map.entries()).map(
+      // for each entry in the map I get the lineid and stations
+      ([lineId, stations]) => {
+        return {
+          line_id: lineId,
+          station_ids: stations // sort stops' id by stop order
+            .sort((a, b) => a.stopOrder - b.stopOrder)
+            .map((stop) => stop.stationId),
+        };
+      },
+    );
+
     res.status(200).json({
       stations,
       lines,
-      links,
+      linesStations,
     });
   } catch (error) {
     console.log(error);
