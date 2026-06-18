@@ -2,17 +2,9 @@ import { Navbar, Container, Nav, Button } from "react-bootstrap";
 import { Link, NavLink } from "react-router-dom";
 import { logout } from "../api";
 import LoginButton from "./LoginButton";
+import LogoutButton from "./LogoutButton";
 
 function Header({ user, setUser }) {
-  const handleLogout = async (e) => {
-    try {
-      if (user) {
-        await logout();
-        setUser(null);
-      }
-    } catch {}
-  };
-
   return (
     <Navbar bg="dark" data-bs-theme="dark" expand="lg">
       <Container>
@@ -39,9 +31,7 @@ function Header({ user, setUser }) {
 
           <Nav>
             {user ? (
-              <Button variant="outline-light" onClick={handleLogout}>
-                Logout
-              </Button>
+              <LogoutButton user={user} setUser={setUser} />
             ) : (
               <LoginButton text="Login" />
             )}

@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { Alert, Badge, Card, Spinner, Table } from "react-bootstrap";
 import { getLeaderboard } from "../api";
+import { useNavigate } from "react-router";
 
-function LeaderboardPage() {
+function LeaderboardPage({ user }) {
+  const navigate = useNavigate();
+  if (!user) {
+    navigate("/login");
+  }
+
   const [leaderboard, setLeaderboard] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
