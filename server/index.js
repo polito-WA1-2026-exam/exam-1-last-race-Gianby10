@@ -5,7 +5,12 @@ import passport from "passport";
 import LocalStrategy from "passport-local";
 import cors from "cors";
 
-import { getAllLines, getAllLinks, getAllStations } from "./games-dao.js";
+import {
+  getAllLines,
+  getAllLinks,
+  getAllStations,
+  getLeaderboard,
+} from "./games-dao.js";
 import { login } from "./users-dao.js";
 const app = new express();
 const PORT = 3001;
@@ -134,6 +139,16 @@ app.get("/api/network/complete", isLoggedIn, async (req, res) => {
       lines,
       linesStations,
     });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/api/leaderboard", isLoggedIn, async (req, res) => {
+  try {
+    const leaderboard = await getLeaderboard();
+    res.status(200).json(leaderboard);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal server error" });
