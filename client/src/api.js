@@ -58,4 +58,26 @@ async function getCurrentSession() {
   }
 }
 
-export { login, logout, getCurrentSession };
+async function getLeaderboard() {
+  const response = await fetch(`${BASE_URL}/leaderboard`, {
+    credentials: "include",
+  });
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error("Cannot load leaderboard");
+  }
+}
+
+async function getFullNetwork() {
+  const response = await fetch(`${BASE_URL}/network/complete`, {
+    credentials: "include",
+  });
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error("Cannot load network");
+  }
+}
+
+export { login, logout, getCurrentSession, getLeaderboard, getFullNetwork };

@@ -1,6 +1,7 @@
 import { Navbar, Container, Nav, Button } from "react-bootstrap";
 import { Link, NavLink } from "react-router-dom";
 import { logout } from "../api";
+import LoginButton from "./LoginButton";
 
 function Header({ user, setUser }) {
   const handleLogout = async (e) => {
@@ -42,9 +43,7 @@ function Header({ user, setUser }) {
                 Logout
               </Button>
             ) : (
-              <Button as={Link} to="/login" variant="outline-light">
-                Login
-              </Button>
+              <LoginButton text="Login" />
             )}
           </Nav>
         </Navbar.Collapse>

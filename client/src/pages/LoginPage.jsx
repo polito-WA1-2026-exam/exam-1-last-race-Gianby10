@@ -15,7 +15,6 @@ export default function LoginPage({ user, setUser }) {
   const handleSubmit = async (ev) => {
     ev.preventDefault();
     setErrormsg("");
-    console.log(email, password);
 
     try {
       const loggedUser = await login(email, password);

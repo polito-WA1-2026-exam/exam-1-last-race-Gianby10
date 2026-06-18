@@ -14,7 +14,6 @@ function MainLayout({ user, setUser }) {
       <main className="container mt-4">
         <Outlet />
       </main>
-      {/* <Footer /> */}
     </>
   );
 }
