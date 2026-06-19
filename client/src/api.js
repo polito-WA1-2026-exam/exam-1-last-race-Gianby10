@@ -80,4 +80,22 @@ async function getFullNetwork() {
   }
 }
 
-export { login, logout, getCurrentSession, getLeaderboard, getFullNetwork };
+async function getNetworkSegments() {
+  const response = await fetch(`${BASE_URL}/network/segments`, {
+    credentials: "include",
+  });
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error("Cannot load network segments");
+  }
+}
+
+export {
+  login,
+  logout,
+  getCurrentSession,
+  getLeaderboard,
+  getFullNetwork,
+  getNetworkSegments,
+};
