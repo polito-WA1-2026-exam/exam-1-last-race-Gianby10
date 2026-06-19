@@ -12,6 +12,7 @@ import {
   getLeaderboard,
 } from "./games-dao.js";
 import { login } from "./users-dao.js";
+import { createSegments } from "./utils.js";
 const app = new express();
 const PORT = 3001;
 
@@ -139,6 +140,44 @@ app.get("/api/network/complete", isLoggedIn, async (req, res) => {
       lines,
       linesStations,
     });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/api/network/segments", isLoggedIn, async (req, res) => {
+  const links = await getAllLinks();
+  const map = new Map();
+
+  // I use map to group lines, so all elements of line_id 1 are together, ecc...
+  links.forEach((l) => {
+    if (!map.has(l.line_id)) {
+      // If map doesn't already have an entry with this line id, then I create it as an empty array
+      map.set(l.line_id, []);
+    }
+
+    map.get(l.line_id).push({
+      // for each line id, I push the object with station id and stop order
+      stationId: l.station_id,
+      stopOrder: l.stop_order,
+    });
+  });
+
+  const linesStations = Array.from(map.entries()).map(
+    // for each entry in the map I get the lineid and stations
+    ([lineId, stations]) => {
+      return {
+        line_id: lineId,
+        station_ids: stations // sort stops' id by stop order
+          .sort((a, b) => a.stopOrder - b.stopOrder)
+          .map((stop) => stop.stationId),
+      };
+    },
+  );
+  const segments = createSegments(linesStations);
+  try {
+    res.status(200).json(segments);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal server error" });

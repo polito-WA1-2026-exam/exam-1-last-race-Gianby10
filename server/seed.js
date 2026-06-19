@@ -99,7 +99,7 @@ const insertLinesStations = (lineId, stationIds) => {
 const users = [
   {
     email: "mario@gmail.com",
-    name: "Mario rossi",
+    name: "Mario Rossi",
     password: "password123",
   },
   {
@@ -109,7 +109,7 @@ const users = [
   },
   {
     email: "luca@gmail.com",
-    name: "Luca bruno",
+    name: "Luca Bruno",
     password: "password123",
   },
   {
