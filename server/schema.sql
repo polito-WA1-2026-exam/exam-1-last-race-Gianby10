@@ -43,6 +43,10 @@ CREATE TABLE games (
   user_id INTEGER NOT NULL REFERENCES users(id),
   start_station_id INTEGER NOT NULL REFERENCES stations(id),
   destination_station_id INTEGER NOT NULL REFERENCES stations(id),
-  score INTEGER NOT NULL CHECK(score >= 0),
-  played_at TEXT NOT NULL
+  score INTEGER CHECK(score >= 0),
+  started_at TEXT NOT NULL,
+  completed_at TEXT,
+  CHECK(start_station_id <> destination_station_id)
+
+
 );

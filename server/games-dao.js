@@ -1,6 +1,6 @@
 import db from "./db.js";
 
-export const getAllStations = () => {
+export const getStations = () => {
   return new Promise((resolve, reject) => {
     const query = `SELECT id, name FROM stations`;
     db.all(query, (err, rows) => {
@@ -12,7 +12,7 @@ export const getAllStations = () => {
   });
 };
 
-export const getAllLines = () => {
+export const getLines = () => {
   return new Promise((resolve, reject) => {
     const query = `SELECT id, name FROM lines`;
     db.all(query, (err, rows) => {
@@ -24,7 +24,7 @@ export const getAllLines = () => {
   });
 };
 
-export const getAllLinks = () => {
+export const getLinesStations = () => {
   return new Promise((resolve, reject) => {
     const query = `SELECT line_id, station_id, stop_order FROM line_station`;
     db.all(query, (err, rows) => {
@@ -45,5 +45,27 @@ export const getLeaderboard = () => {
       }
       resolve(rows);
     });
+  });
+};
+
+// Create game
+export const startNewGame = (newGame) => {
+  return new Promise((resolve, reject) => {
+    const query = `INSERT INTO games(user_id, start_station_id, destination_station_id,started_at) VALUES (?,?,?,?) RETURNING *`;
+    db.get(
+      query,
+      [
+        newGame.userId,
+        newGame.startStationId,
+        newGame.destinationStationId,
+        newGame.startedAt,
+      ],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(rows);
+      },
+    );
   });
 };

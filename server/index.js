@@ -4,15 +4,22 @@ import morgan from "morgan";
 import passport from "passport";
 import LocalStrategy from "passport-local";
 import cors from "cors";
+import dayjs from "dayjs";
 
 import {
-  getAllLines,
-  getAllLinks,
-  getAllStations,
   getLeaderboard,
+  getLines,
+  getLinesStations,
+  getStations,
+  startNewGame,
 } from "./games-dao.js";
 import { login } from "./users-dao.js";
-import { createSegments } from "./utils.js";
+import {
+  createSegments,
+  getStartAndDestinationStationIds,
+  groupStationsByLine,
+} from "./utils.js";
+
 const app = new express();
 const PORT = 3001;
 
@@ -103,37 +110,11 @@ app.delete("/api/sessions/current", (req, res) => {
 
 app.get("/api/network/complete", isLoggedIn, async (req, res) => {
   try {
-    const stations = await getAllStations();
-    const lines = await getAllLines();
-    const links = await getAllLinks();
+    const stations = await getStations();
+    const lines = await getLines();
+    const linesStationsRows = await getLinesStations();
 
-    const map = new Map();
-
-    // I use map to group lines, so all elements of line_id 1 are together, ecc...
-    links.forEach((l) => {
-      if (!map.has(l.line_id)) {
-        // If map doesn't already have an entry with this line id, then I create it as an empty array
-        map.set(l.line_id, []);
-      }
-
-      map.get(l.line_id).push({
-        // for each line id, I push the object with station id and stop order
-        stationId: l.station_id,
-        stopOrder: l.stop_order,
-      });
-    });
-
-    const linesStations = Array.from(map.entries()).map(
-      // for each entry in the map I get the lineid and stations
-      ([lineId, stations]) => {
-        return {
-          line_id: lineId,
-          station_ids: stations // sort stops' id by stop order
-            .sort((a, b) => a.stopOrder - b.stopOrder)
-            .map((stop) => stop.stationId),
-        };
-      },
-    );
+    const linesStations = groupStationsByLine(linesStationsRows);
 
     res.status(200).json({
       stations,
@@ -147,37 +128,44 @@ app.get("/api/network/complete", isLoggedIn, async (req, res) => {
 });
 
 app.get("/api/network/segments", isLoggedIn, async (req, res) => {
-  const links = await getAllLinks();
-  const map = new Map();
-
-  // I use map to group lines, so all elements of line_id 1 are together, ecc...
-  links.forEach((l) => {
-    if (!map.has(l.line_id)) {
-      // If map doesn't already have an entry with this line id, then I create it as an empty array
-      map.set(l.line_id, []);
-    }
-
-    map.get(l.line_id).push({
-      // for each line id, I push the object with station id and stop order
-      stationId: l.station_id,
-      stopOrder: l.stop_order,
-    });
-  });
-
-  const linesStations = Array.from(map.entries()).map(
-    // for each entry in the map I get the lineid and stations
-    ([lineId, stations]) => {
-      return {
-        line_id: lineId,
-        station_ids: stations // sort stops' id by stop order
-          .sort((a, b) => a.stopOrder - b.stopOrder)
-          .map((stop) => stop.stationId),
-      };
-    },
-  );
+  const linesStationsRows = await getLinesStations();
+  const linesStations = groupStationsByLine(linesStationsRows);
   const segments = createSegments(linesStations);
   try {
     res.status(200).json(segments);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.post("/api/games/start", isLoggedIn, async (req, res) => {
+  const userId = req.user.id;
+  if (!userId) {
+    res.status(401).json("Unauthorized");
+  }
+  const linesStationsRows = await getLinesStations();
+  const linesStations = groupStationsByLine(linesStationsRows);
+
+  const startedAt = dayjs().toISOString();
+
+  const [startStationId, destinationStationId] =
+    getStartAndDestinationStationIds(linesStations);
+
+  const game = {
+    userId,
+    startStationId,
+    destinationStationId,
+    startedAt,
+  };
+
+  try {
+    const newGame = await startNewGame(game);
+    res.status(201).json({
+      started_at: startedAt,
+      start_station_id: startStationId,
+      destination_station_id: destinationStationId,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal server error" });
