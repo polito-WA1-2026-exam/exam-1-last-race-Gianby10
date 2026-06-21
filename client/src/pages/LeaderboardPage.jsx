@@ -1,23 +1,18 @@
 import { useEffect, useState } from "react";
 import { Alert, Badge, Card, Spinner, Table } from "react-bootstrap";
 import { getLeaderboard } from "../api";
-import { useNavigate } from "react-router";
+import { Navigate } from "react-router-dom";
 
 function LeaderboardPage({ user }) {
-  const navigate = useNavigate();
-  if (!user) {
-    navigate("/login");
-  }
-
   const [leaderboard, setLeaderboard] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!user) return;
     getLeaderboard()
       .then((data) => {
         setLeaderboard(data);
-        console.log(data);
         setError("");
       })
       .catch((err) => {
@@ -26,7 +21,11 @@ function LeaderboardPage({ user }) {
       .finally(() => {
         setIsLoading(false);
       });
-  }, []);
+  }, [user]);
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
   if (isLoading) {
     return (
@@ -62,29 +61,38 @@ function LeaderboardPage({ user }) {
               <thead className="table-light">
                 <tr>
                   <th>Rank</th>
-                  <th>Player</th>
-                  <th>Best score</th>
+                  <th className="text-center">Player</th>
+                  <th className="text-end">Best score</th>
                 </tr>
               </thead>
 
               <tbody>
                 {leaderboard.map((player, index) => (
-                  <tr key={player.user_id}>
+                  <tr
+                    key={player.user_id}
+                    className={
+                      Number(player.user_id) === Number(user.id)
+                        ? "table-primary"
+                        : ""
+                    }
+                  >
                     <td>
                       {index === 0 ? (
-                        <span>1st</span>
+                        <Badge className="bg-warning">1st</Badge>
                       ) : index === 1 ? (
-                        <span>2nd</span>
+                        <Badge className="bg-secondary">2nd</Badge>
                       ) : index === 2 ? (
-                        <span>3rd</span>
+                        <Badge className="bg-dark">3rd</Badge>
                       ) : (
                         index + 1
                       )}
                     </td>
 
-                    <td className="fw-semibold">{player.user_name}</td>
+                    <td className="fw-semibold text-center">
+                      {player.user_name}
+                    </td>
 
-                    <td className="">
+                    <td className="text-end">
                       <span className="fw-bold">{player.score}</span> coins
                     </td>
                   </tr>

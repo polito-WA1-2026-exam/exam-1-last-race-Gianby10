@@ -25,9 +25,8 @@ async function login(email, password) {
     return body;
   }
 
-  if (response.status == 401) {
+  if (response.status === 401) {
     const error = body?.error?.message || "Invalid credentials";
-    console.log(error);
     throw new Error(error);
   }
 
@@ -51,10 +50,14 @@ async function getCurrentSession() {
   const response = await fetch(`${BASE_URL}/sessions/current`, {
     credentials: "include",
   });
+  if (response.status === 401) {
+    return null;
+  }
+
   if (response.ok) {
     return await response.json();
   } else {
-    return null;
+    throw new Error("Cannot get current session");
   }
 }
 

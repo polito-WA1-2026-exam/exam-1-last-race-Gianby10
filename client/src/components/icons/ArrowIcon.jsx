@@ -1,4 +1,4 @@
-export default function Arrow({ size = 24, className = "" }) {
+export default function ArrowIcon({ size = 24, className = "" }) {
   //  https://www.svgrepo.com/svg/310340/arrows-bidirectional
   return (
     <div>

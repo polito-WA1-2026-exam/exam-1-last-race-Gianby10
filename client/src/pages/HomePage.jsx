@@ -1,20 +1,12 @@
 import { Link } from "react-router-dom";
 import {
-  Alert,
-  Badge,
-  Button,
-  Card,
-  Col,
-  Row,
-  ListGroup,
-} from "react-bootstrap";
-import {
   PhaseFour,
   PhaseOne,
   PhaseThree,
   PhaseTwo,
 } from "../components/GamePhases.jsx";
 import LoginButton from "../components/LoginButton.jsx";
+import { Alert, Button, Col, Row } from "react-bootstrap";
 
 function HomePage({ user }) {
   return (

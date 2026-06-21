@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import GamePage from "./pages/GamePage.jsx";
 import LeaderboardPage from "./pages/LeaderboardPage.jsx";
+import { Spinner } from "react-bootstrap";
 
 function MainLayout({ user, setUser }) {
   return (
@@ -20,7 +21,7 @@ function MainLayout({ user, setUser }) {
 
 function App() {
   const [user, setUser] = useState(null);
-
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   useEffect(() => {
     getCurrentSession()
       .then((res) => {
@@ -30,8 +31,18 @@ function App() {
           setUser(null);
         }
       })
-      .catch(() => setUser(null));
+      .catch(() => setUser(null))
+      .finally(() => setIsAuthLoading(false));
   }, []);
+
+  if (isAuthLoading) {
+    return (
+      <div className="d-flex align-items-center gap-2">
+        <Spinner animation="border" size="sm" />
+        <span>Loading...</span>
+      </div>
+    );
+  }
 
   return (
     <Routes>
