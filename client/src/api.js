@@ -91,6 +91,35 @@ async function getNetworkSegments() {
   }
 }
 
+async function startNewGame() {
+  const response = await fetch(`${BASE_URL}/games/start`, {
+    credentials: "include",
+    method: "POST",
+  });
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error("Cannot start new game");
+  }
+}
+
+async function validateGame(gameId, segments) {
+  const response = await fetch(`${BASE_URL}/games/${gameId}/validate`, {
+    credentials: "include",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+
+    body: JSON.stringify({ segments: segments }),
+  });
+  if (response.ok) {
+    return await response.json();
+  } else {
+    throw new Error("Cannot validate game");
+  }
+}
+
 export {
   login,
   logout,
@@ -98,4 +127,6 @@ export {
   getLeaderboard,
   getFullNetwork,
   getNetworkSegments,
+  startNewGame,
+  validateGame,
 };

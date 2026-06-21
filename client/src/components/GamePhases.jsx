@@ -26,30 +26,32 @@ const PhaseTwo = () => {
           valid route by selecting connected station pairs.
         </Card.Text>
 
-        <ListGroup variant="flush" className="mt-3">
-          <ListGroup.Item>90 seconds of time</ListGroup.Item>
-          <ListGroup.Item>
-            A route is <span className="fw-bold">valid</span> when it starts at
-            the assigned station and ends at the destination station.
-          </ListGroup.Item>
-          <ListGroup.Item>
-            Each segment must be reachable through one of the lines.
-          </ListGroup.Item>
-          <ListGroup.Item>
-            Each segment can be selected only once.
-          </ListGroup.Item>
-          <ListGroup.Item>
-            Line changes are possible only at interchange stations.
-          </ListGroup.Item>
-          <ListGroup.Item>
-            If the route is invalid, you lose and your final score will be 0.
-          </ListGroup.Item>
-        </ListGroup>
+        <RouteRules />
       </Card.Body>
     </Card>
   );
 };
-
+const RouteRules = () => {
+  return (
+    <ListGroup variant="flush" className="mt-3">
+      <ListGroup.Item>90 seconds of time</ListGroup.Item>
+      <ListGroup.Item>
+        A route is <span className="fw-bold">valid</span> when it starts at the
+        assigned station and ends at the destination station.
+      </ListGroup.Item>
+      <ListGroup.Item>
+        Each segment must be reachable through one of the lines.
+      </ListGroup.Item>
+      <ListGroup.Item>Each segment can be selected only once.</ListGroup.Item>
+      <ListGroup.Item>
+        Line changes are possible only at interchange stations.
+      </ListGroup.Item>
+      <ListGroup.Item>
+        If the route is invalid, you lose and your final score will be 0.
+      </ListGroup.Item>
+    </ListGroup>
+  );
+};
 const PhaseThree = () => {
   return (
     <Card className="h-100 shadow-sm">
@@ -81,4 +83,4 @@ const PhaseFour = () => {
   );
 };
 
-export { PhaseOne, PhaseTwo, PhaseThree, PhaseFour };
+export { PhaseOne, PhaseTwo, PhaseThree, PhaseFour, RouteRules };
