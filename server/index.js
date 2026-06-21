@@ -5,8 +5,11 @@ import passport from "passport";
 import LocalStrategy from "passport-local";
 import cors from "cors";
 import dayjs from "dayjs";
+import { body, param, validationResult } from "express-validator";
 
 import {
+  completeGame,
+  getGameById,
   getLeaderboard,
   getLines,
   getLinesStations,
@@ -16,6 +19,7 @@ import {
 import { login } from "./users-dao.js";
 import {
   createSegments,
+  drawEventsFromSegments,
   getStartAndDestinationStationIds,
   groupStationsByLine,
 } from "./utils.js";
@@ -162,6 +166,7 @@ app.post("/api/games/start", isLoggedIn, async (req, res) => {
   try {
     const newGame = await startNewGame(game);
     res.status(201).json({
+      game_id: newGame.id,
       started_at: startedAt,
       start_station_id: startStationId,
       destination_station_id: destinationStationId,
@@ -171,6 +176,78 @@ app.post("/api/games/start", isLoggedIn, async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+const BASE_SCORE = 20;
+app.post(
+  "/api/games/:gameId/validate",
+  isLoggedIn,
+  [
+    param("gameId").isInt({ min: 1 }).withMessage("Invalid game id").toInt(),
+
+    body("segments")
+      .isArray({ min: 1 })
+      .withMessage("Segments must be a non-empty array"),
+
+    body("segments.*.from")
+      .isInt({ min: 1 })
+      .withMessage("Each from value must be a valid station id")
+      .toInt(),
+
+    body("segments.*.to")
+      .isInt({ min: 1 })
+      .withMessage("Each to value must be a valid station id")
+      .toInt(),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          error: "Invalid request",
+          fields: errors.array(),
+        });
+      }
+
+      const gameId = req.params.gameId;
+      const segments = req.body.segments;
+      const completedAt = dayjs().toISOString();
+
+      const game = await getGameById(gameId);
+
+      if (!game) {
+        return res.status(404).json({
+          error: "Game not found",
+        });
+      }
+
+      if (Number(game.user_id) !== Number(req.user.id)) {
+        return res.status(403).json({
+          error: "Forbidden",
+        });
+      }
+
+      // TODO: Validate route
+
+      const isRouteValid = true;
+
+      if (isRouteValid) {
+      }
+      const events = await drawEventsFromSegments(segments);
+      const finalScore = Math.max(
+        events.reduce((acc, currentEvent) => {
+          return (acc += currentEvent.drawnEvent.points_worth);
+        }, BASE_SCORE),
+        0,
+      );
+
+      await completeGame(gameId, finalScore, completedAt);
+
+      res.status(200).json({ isRouteValid, events, finalScore });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
+);
 
 app.get("/api/leaderboard", isLoggedIn, async (req, res) => {
   try {

@@ -1,3 +1,5 @@
+import { getEvents } from "./games-dao.js";
+
 export function createSegments(linesStations) {
   const segments = [];
 
@@ -141,4 +143,23 @@ export function getStartAndDestinationStationIds(linesStations) {
   const destinationStationId = getRandomElement(validDestinations); // Of those valid destinations, pick one at random
 
   return [startStationId, destinationStationId];
+}
+
+export async function drawEventsFromSegments(segments) {
+  try {
+    const events = await getEvents();
+    if (!events.length) {
+      return [];
+    }
+    return segments.map((segment) => {
+      const drawnEvent = events[Math.floor(Math.random() * events.length)];
+      return {
+        segment,
+        drawnEvent,
+      };
+    });
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
