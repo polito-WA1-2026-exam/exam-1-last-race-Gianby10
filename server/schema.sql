@@ -26,7 +26,7 @@ CREATE TABLE lines (
 CREATE TABLE line_station (
   line_id INTEGER REFERENCES lines(id),
   station_id INTEGER REFERENCES stations(id),
-  stop_order INTEGER NOT NULL CHECK(stop_order > 0), -- order non va perche sql è scemo
+  stop_order INTEGER NOT NULL CHECK(stop_order > 0), -- order non va
 
   PRIMARY KEY(line_id,station_id)
 );
@@ -47,6 +47,4 @@ CREATE TABLE games (
   started_at TEXT NOT NULL,
   completed_at TEXT,
   CHECK(start_station_id <> destination_station_id)
-
-
 );

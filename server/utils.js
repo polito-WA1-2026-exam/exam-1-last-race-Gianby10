@@ -4,11 +4,11 @@ export function createSegments(linesStations) {
   const segments = [];
 
   linesStations.forEach((line) => {
-    for (let i = 0; i < line.station_ids.length - 1; i++) {
+    for (let i = 0; i < line.stationIds.length - 1; i++) {
       // From
-      const a = line.station_ids[i];
+      const a = line.stationIds[i];
       // To
-      const b = line.station_ids[i + 1];
+      const b = line.stationIds[i + 1];
 
       // Order them
       const from = Math.min(a, b);
@@ -22,7 +22,7 @@ export function createSegments(linesStations) {
         segments.push({
           from,
           to,
-          lines: [line.line_id],
+          lines: [line.lineId],
         });
       } else {
         // Add the other line to the lines array
@@ -56,8 +56,8 @@ export function groupStationsByLine(linesStationsRow) {
     // for each entry in the map I get the lineid and stations
     ([lineId, stations]) => {
       return {
-        line_id: lineId,
-        station_ids: stations // sort stops' id by stop order
+        lineId: lineId,
+        stationIds: stations // sort stops' id by stop order
           .sort((a, b) => a.stopOrder - b.stopOrder)
           .map((stop) => stop.stationId),
       };
@@ -70,10 +70,10 @@ function buildGraph(linesStations) {
 
   // One line at a time
   for (const line of linesStations) {
-    for (let i = 0; i < line.station_ids.length - 1; i++) {
-      const currentStation = line.station_ids[i];
+    for (let i = 0; i < line.stationIds.length - 1; i++) {
+      const currentStation = line.stationIds[i];
       // This is after the current station
-      const nextStation = line.station_ids[i + 1];
+      const nextStation = line.stationIds[i + 1];
 
       if (!graph[currentStation]) {
         // If station is not already in the graph, we initialize the associated array
@@ -145,21 +145,87 @@ export function getStartAndDestinationStationIds(linesStations) {
   return [startStationId, destinationStationId];
 }
 
-export async function drawEventsFromSegments(segments) {
-  try {
-    const events = await getEvents();
-    if (!events.length) {
-      return [];
-    }
-    return segments.map((segment) => {
-      const drawnEvent = events[Math.floor(Math.random() * events.length)];
-      return {
-        segment,
-        drawnEvent,
-      };
-    });
-  } catch (error) {
-    console.error(error);
-    return [];
+export async function drawEventsFromSegments(events, segments) {
+  return segments.map((segment) => {
+    const drawnEvent = events[Math.floor(Math.random() * events.length)];
+    return {
+      segment,
+      drawnEvent,
+    };
+  });
+}
+
+export function validateRoute(
+  selectedSegments,
+  linesStations,
+  startStationId,
+  destinationStationId,
+) {
+  if (!Array.isArray(selectedSegments) || selectedSegments.length === 0) {
+    return false;
   }
+
+  // Start from the start station
+  let currentStationId = Number(startStationId);
+  // Remember used segments
+  const usedSegments = new Set();
+
+  // For each segment of the selectedSegments
+  for (const segment of selectedSegments) {
+    const from = Number(segment.from);
+    const to = Number(segment.to);
+
+    if (!Number.isInteger(from) || !Number.isInteger(to)) {
+      return false;
+    }
+
+    // Check that the segment really exist
+    const segmentExists = linesStations.some((line) => {
+      const stationIds = line.stationIds.map(Number);
+
+      for (let i = 0; i < stationIds.length - 1; i++) {
+        // For each station of the line I check if the segment exists
+        const stationA = stationIds[i];
+        const stationB = stationIds[i + 1];
+
+        if (
+          (stationA === from && stationB === to) ||
+          (stationA === to && stationB === from)
+        ) {
+          return true;
+        }
+      }
+
+      return false;
+    });
+
+    if (!segmentExists) {
+      // Invalid route if the segment doesn't exist
+      return false;
+    }
+
+    const segmentKey = [from, to].sort((a, b) => a - b).join("-"); // Create unique key to consider 1->2 and 2->1 the same
+
+    if (usedSegments.has(segmentKey)) {
+      // If a segment is used more than once, then the route is not valid
+      return false;
+    }
+
+    usedSegments.add(segmentKey);
+    // Check contiguity of stations
+    if (currentStationId === from) {
+      currentStationId = to;
+    } else if (currentStationId === to) {
+      currentStationId = from;
+    } else {
+      return false;
+    }
+  }
+
+  // Check that the final station is the dest station
+  if (currentStationId !== Number(destinationStationId)) {
+    return false;
+  }
+
+  return true;
 }
