@@ -70,21 +70,27 @@ export default function ExecutionPhase({
               <h5 className="fw-bold mb-3">Effect</h5>
               <Badge
                 bg={
-                  drawnEvent.points_worth > 0
+                  drawnEvent.pointsWorth > 0
                     ? "success"
-                    : drawnEvent.points_worth < 0
+                    : drawnEvent.pointsWorth < 0
                       ? "danger"
                       : "secondary"
                 }
                 className="fs-5"
               >
-                {drawnEvent.points_worth > 0 ? "+" : ""}
-                {drawnEvent.points_worth}
+                {drawnEvent.pointsWorth > 0 ? "+" : ""}
+                {drawnEvent.pointsWorth}
               </Badge>
             </Col>
           </Row>
           <div className="d-flex justify-content-between align-items-center mt-4">
             <div>
+              {!isLastEvent && (
+                <span className="fs-5">
+                  Score:
+                  <span className="fw-bold">{currentItem.scoreAfterEvent}</span>
+                </span>
+              )}
               {isLastEvent && (
                 <span className="fs-5">
                   Final score:

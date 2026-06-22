@@ -98,10 +98,10 @@ function GamePage({ user }) {
     startNewGame()
       .then((data) => {
         setGame({
-          id: data.game_id,
-          startStationId: Number(data.start_station_id),
-          destinationStationId: Number(data.destination_station_id),
-          startedAt: data.started_at,
+          id: data.gameId,
+          startStationId: Number(data.startStationId),
+          destinationStationId: Number(data.destinationStationId),
+          startedAt: data.startedAt,
         });
         setPhase(PLANNING_PHASE);
       })

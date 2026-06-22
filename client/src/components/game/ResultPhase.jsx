@@ -16,7 +16,7 @@ export default function ResultPhase({
         <Card.Body className="p-4 text-center">
           {isRouteValid ? (
             <>
-              <h3 className="fw-bold mb-3">You reached the destination!</h3>
+              <h3 className="fw-bold mb-3">You've reached the destination!</h3>
               <p className="text-secondary">
                 Your route was valid and all events have been applied.
               </p>
