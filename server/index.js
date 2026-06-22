@@ -110,8 +110,12 @@ app.get("/api/sessions/current", (req, res) => {
 
 // Logout
 app.delete("/api/sessions/current", (req, res) => {
-  req.logout(() => {
-    res.end();
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+
+    return res.status(204).end();
   });
 });
 
